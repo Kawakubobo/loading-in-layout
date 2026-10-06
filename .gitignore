@@ -1,0 +1,21 @@
+# Local runtime state and generated reference copies
+/data/
+/snapshots/
+
+# Local font binaries; installation instructions are published
+/assets/fonts/*
+!/assets/fonts/README.md
+
+# Generated previews
+/*.jpg
+/*.jpeg
+/*.png
+
+# Environment and development artifacts
+.DS_Store
+.env
+.env.*
+!.env.example
+node_modules/
+coverage/
+*.log

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <title>Loading in Layout — Live activity</title>
+    <meta name="description" content="A live layout study on a 1920 × 1080 canvas, set in TWK Lausanne." />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='%23000' d='M4 4h10v10H4zm14 0h10v10H18zM4 18h10v10H4zm14 0h10v10H18z'/%3E%3C/svg%3E" />
+    <link rel="preload" href="/assets/fonts/TWKLausanne-400.otf" as="font" type="font/otf" crossorigin />
+    <link rel="preload" href="/assets/fonts/TWKLausanne-600.otf" as="font" type="font/otf" crossorigin />
+    <link rel="stylesheet" href="/styles.css" />
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body>
+    <header class="workspace-header">
+      <span>Loading in Layout <span class="muted" id="version-label">/ Working</span></span>
+      <nav class="version-links" aria-label="Website versions">
+        <a href="http://127.0.0.1:4173/" id="working-link">Working</a>
+        <a href="http://127.0.0.1:4174/" id="reference-link">Reference</a>
+      </nav>
+    </header>
+
+    <main class="viewport" id="viewport" aria-label="Layout canvas preview">
+      <div class="canvas-wrap" id="canvas-wrap">
+        <article class="artboard" id="artboard" aria-label="1920 by 1080 pixel white canvas">
+          <div class="composition" id="composition" aria-label="Live progress and tool activity"></div>
+          <div class="sr-only" id="evolution-announcement" role="status" aria-live="polite"></div>
+        </article>
+      </div>
+    </main>
+
+    <div class="study-status" aria-label="Composition status">
+      <span id="composition-status">Preparing the canvas</span>
+      <span class="connection"><i id="connection-dot"></i><span id="connection-text">Connecting</span></span>
+    </div>
+    <footer class="toolbar" aria-label="Canvas controls">
+      <div class="feed-caption"><span id="feed-state">Waiting for activity</span><span id="snapshot-label" class="muted"></span></div>
+      <div class="zoom-controls"><span class="dimensions">1920 × 1080</span><button id="fit-view" aria-pressed="true">Fit <span id="zoom-label"></span></button><button id="actual-view" aria-pressed="false">100%</button></div>
+    </footer>
+  </body>
+</html>

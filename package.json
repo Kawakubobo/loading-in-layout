@@ -1,0 +1,16 @@
+{
+  "name": "loading-in-layout",
+  "version": "1.0.0",
+  "description": "A live typographic canvas with balanced layouts, public activity streaming, and working/reference previews.",
+  "engines": { "node": ">=22" },
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node server.mjs",
+    "start": "node server.mjs",
+    "test": "node --test",
+    "snapshot": "node scripts/begin-prompt.mjs",
+    "begin-prompt": "node scripts/begin-prompt.mjs",
+    "activity": "node scripts/activity.mjs"
+  }
+}

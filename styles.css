@@ -1,0 +1,43 @@
+@font-face { font-family: "TWK Lausanne"; src: url("/assets/fonts/TWKLausanne-400.otf") format("opentype"); font-style: normal; font-weight: 400; font-display: block; }
+@font-face { font-family: "TWK Lausanne"; src: url("/assets/fonts/TWKLausanne-600.otf") format("opentype"); font-style: normal; font-weight: 600; font-display: block; }
+:root { font-family: "TWK Lausanne"; font-synthesis: none; color: #161616; background: #efefed; font-size: 14px; font-weight: 400; }
+* { box-sizing: border-box; }
+body { margin: 0; height: 100dvh; display: flex; flex-direction: column; }
+button { font: inherit; color: inherit; cursor: pointer; border: 0; background: none; }
+a { color: inherit; text-decoration: none; }
+button:focus-visible, a:focus-visible { outline: 2px solid #161616; outline-offset: 4px; }
+.workspace-header { display: flex; justify-content: space-between; align-items: center; padding: 24px 28px; gap: 24px; }
+.muted, .dimensions { color: #777770; }
+.version-links { display: flex; align-items: center; gap: 10px; }
+.version-links a { padding: 10px 14px; }
+.version-links a[aria-current="page"], .version-links a:hover { background: #fff; }
+.connection { display: inline-flex; align-items: center; gap: 9px; white-space: nowrap; }
+.connection i { width: 7px; height: 7px; border-radius: 50%; background: #999; }
+.connection i.connected { background: #42834b; }
+.viewport { flex: 1; min-height: 0; overflow: auto; display: grid; place-items: center; padding: 12px 28px 28px; }
+.canvas-wrap { position: relative; flex: none; }
+.artboard { width: 1920px; height: 1080px; background: #fff; position: absolute; top: 0; left: 0; transform-origin: top left; overflow: hidden; isolation: isolate; }
+.composition { position: absolute; inset: 0; }
+[hidden] { display: none !important; }
+h1, h2, p { margin: 0; }
+h2 { font-size: 32px; font-weight: 600; line-height: 1.12; letter-spacing: -1px; }
+p { font-size: 14px; line-height: 1.5; max-width: 740px; }
+.eyebrow { font-size: 14px; line-height: 1.2; font-weight: 400; }
+.evolving-section { position: absolute; display: flex; flex-direction: column; gap: 20px; overflow-wrap: anywhere; }
+.evolving-section .eyebrow { display: flex; gap: 18px; align-items: baseline; }
+.evolving-section h2 { margin: 0; text-wrap: balance; }
+.evolving-section.display h2 { font-size: 128px; line-height: 0.98; letter-spacing: -6.4px; }
+.evolving-section.note h2 { max-width: 740px; }
+.study-status { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 0 28px 18px; color: #777770; }
+.study-status .connection { color: #161616; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.toolbar { min-height: 76px; padding: 0 28px 22px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.feed-caption { display: flex; flex-direction: column; gap: 6px; }
+.zoom-controls { display: flex; align-items: center; gap: 12px; }
+.toolbar button { padding: 9px 12px; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.toolbar button:hover { background: #ffffff80; }
+.toolbar button[aria-pressed="true"] { background: #fff; }
+.dimensions { margin-right: 12px; white-space: nowrap; }
+@media (max-width: 1000px) { .workspace-header { padding: 20px; } .viewport { padding: 8px 20px 20px; } .dimensions { display: none; } }
+@media (max-width: 760px) { .workspace-header { flex-wrap: wrap; gap: 12px; } .study-status { padding: 0 20px 14px; } .toolbar { flex-wrap: wrap; gap: 14px; padding: 0 20px 20px; } }
+@media (max-width: 480px) { .muted { display: none; } .study-status { flex-wrap: wrap; gap: 6px; } }

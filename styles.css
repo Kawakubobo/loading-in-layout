@@ -1,7 +1,10 @@
-@font-face { font-family: "TWK Lausanne"; src: url("/assets/fonts/TWKLausanne-400.otf") format("opentype"); font-style: normal; font-weight: 400; font-display: block; }
-@font-face { font-family: "TWK Lausanne"; src: url("/assets/fonts/TWKLausanne-600.otf") format("opentype"); font-style: normal; font-weight: 600; font-display: block; }
-:root { font-family: "TWK Lausanne"; font-synthesis: none; color: #161616; background: #efefed; font-size: 14px; font-weight: 400; }
+@font-face { font-family: "Neue Haas Grotesk Display"; src: url("/assets/fonts/NeueHaasGroteskDisplay-Medium.ttf") format("truetype"); font-style: normal; font-weight: 500; font-display: block; }
+@font-face { font-family: "Neue Haas Grotesk Display"; src: url("/assets/fonts/NeueHaasGroteskDisplay-Regular.ttf") format("truetype"); font-style: normal; font-weight: 400; font-display: block; }
+@font-face { font-family: "Neue Haas Grotesk Display"; src: url("/assets/fonts/NeueHaasGroteskDisplay-Bold.ttf") format("truetype"); font-style: normal; font-weight: 700; font-display: block; }
+:root { font-family: "Neue Haas Grotesk Display"; font-synthesis: none; color: #161616; background: #efefed; font-size: 14px; font-weight: 400; }
 * { box-sizing: border-box; }
+/* Mask only the unrevealed glyphs; full text retains its wrapping and geometry. */
+::highlight(untyped) { color: transparent; text-shadow: none; }
 body { margin: 0; height: 100dvh; display: flex; flex-direction: column; }
 button { font: inherit; color: inherit; cursor: pointer; border: 0; background: none; }
 a { color: inherit; text-decoration: none; }
@@ -20,19 +23,25 @@ button:focus-visible, a:focus-visible { outline: 2px solid #161616; outline-offs
 .composition { position: absolute; inset: 0; }
 [hidden] { display: none !important; }
 h1, h2, p { margin: 0; }
-h2 { font-size: 32px; font-weight: 600; line-height: 1.12; letter-spacing: -1px; }
-p { font-size: 14px; line-height: 1.5; max-width: 740px; }
+h1, h2 { font-weight: 400; line-height: 0.8; letter-spacing: -0.02em; }
+h2 { font-size: 32px; }
+p { font-size: 18px; line-height: 1.2; max-width: 445px; white-space: pre-line; text-indent: 0; text-align: left; text-wrap: wrap; hyphens: auto; -webkit-hyphens: auto; hyphenate-limit-chars: 6 3 3; }
 .eyebrow { font-size: 14px; line-height: 1.2; font-weight: 400; }
+.eyebrow, .feed-caption { font-variant-caps: all-small-caps; font-synthesis: small-caps; }
 .evolving-section { position: absolute; display: flex; flex-direction: column; gap: 20px; overflow-wrap: anywhere; }
+.evolving-section p + p { text-indent: 2em; margin-top: -20px; }
+.activity-image { display: block; object-fit: contain; flex: none; max-width: 100%; }
 .evolving-section .eyebrow { display: flex; gap: 18px; align-items: baseline; }
 .evolving-section h2 { margin: 0; text-wrap: balance; }
-.evolving-section.display h2 { font-size: 128px; line-height: 0.98; letter-spacing: -6.4px; }
+.evolving-section.display h2 { font-size: 128px; }
 .evolving-section.note h2 { max-width: 740px; }
 .study-status { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 0 28px 18px; color: #777770; }
 .study-status .connection { color: #161616; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 .toolbar { min-height: 76px; padding: 0 28px 22px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
 .feed-caption { display: flex; flex-direction: column; gap: 6px; }
+.transparent-image { margin: 0; padding-block: 24px; border-block: 1px solid currentColor; }
+.transparent-image > img { display: block; max-width: 100%; height: auto; margin-inline: auto; }
 .zoom-controls { display: flex; align-items: center; gap: 12px; }
 .toolbar button { padding: 9px 12px; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
 .toolbar button:hover { background: #ffffff80; }
@@ -41,3 +50,86 @@ p { font-size: 14px; line-height: 1.5; max-width: 740px; }
 @media (max-width: 1000px) { .workspace-header { padding: 20px; } .viewport { padding: 8px 20px 20px; } .dimensions { display: none; } }
 @media (max-width: 760px) { .workspace-header { flex-wrap: wrap; gap: 12px; } .study-status { padding: 0 20px 14px; } .toolbar { flex-wrap: wrap; gap: 14px; padding: 0 20px 20px; } }
 @media (max-width: 480px) { .muted { display: none; } .study-status { flex-wrap: wrap; gap: 6px; } }
+
+/* Oversized question/emphasis beat: intentional crop outside the normal grid. */
+.overtext { position: absolute; inset: 0; z-index: 100; background: #fff; overflow: hidden; padding-top: 100px; }
+.overtext h2 { position: relative; left: -90px; width: max-content; max-width: none; white-space: pre; font-weight: 400; line-height: .8; letter-spacing: -.02em; }
+
+/* During emphasis, keep photos and copy in front of the oversized lettering. */
+.overtext-collage .overtext { z-index: 1; background: transparent; }
+.overtext-collage .evolving-section { visibility: hidden; }
+.overtext-collage .evolving-section[data-collage-position] { visibility: visible; z-index: 2; left: 0 !important; top: 0 !important; width: 1920px !important; height: 1080px; display: block; pointer-events: none; }
+.overtext-collage [data-collage-position] > * { position: absolute; }
+.overtext-collage [data-collage-position] h2 { font-size: 56px; width: 445px; max-width: 445px; text-wrap: wrap; }
+.overtext-collage [data-collage-position] p { width: 445px; }
+.overtext-collage [data-collage-position] p ~ p { visibility: hidden; }
+.overtext-collage [data-collage-position="upper"] .activity-image { left: 1590px; top: 84px; width: 290px !important; height: 425px !important; object-fit: cover; }
+.overtext-collage [data-collage-position="upper"] .eyebrow { left: 1125px; top: 84px; }
+.overtext-collage [data-collage-position="upper"] h2 { left: 1125px; top: 132px; }
+.overtext-collage [data-collage-position="upper"] p { left: 1125px; top: 265px; }
+.overtext-collage [data-collage-position="lower"] .activity-image { left: 40px; top: 540px; width: 755px !important; height: 500px !important; object-fit: cover; }
+.overtext-collage [data-collage-position="lower"] .eyebrow { left: 815px; top: 620px; }
+.overtext-collage [data-collage-position="lower"] h2 { left: 815px; top: 650px; }
+.overtext-collage [data-collage-position="lower"] p { left: 815px; top: 785px; }
+
+/* Six-column image, lower middle copy, and a three-column right-hand stack. */
+.editorial-spread .evolving-section { visibility: hidden; }
+.editorial-spread .evolving-section[data-collage-position] { visibility: visible; left: 0 !important; top: 0 !important; width: 1920px !important; height: 1080px; display: block; }
+.editorial-spread [data-collage-position] > * { position: absolute; }
+.editorial-spread [data-collage-position] h2 { width: 445px; max-width: 445px; font-size: 56px; text-wrap: wrap; }
+.editorial-spread [data-collage-position] p { width: 445px; max-height: 250px; overflow: hidden; }
+.editorial-spread [data-collage-position] p ~ p { visibility: hidden; }
+.editorial-spread [data-collage-position="lead"] .activity-image { left: 40px; top: 64px; width: 910px !important; height: 976px !important; object-fit: cover; }
+.editorial-spread [data-collage-position="lead"] .eyebrow { left: 970px; top: 624px; }
+.editorial-spread [data-collage-position="lead"] h2 { left: 970px; top: 660px; }
+.editorial-spread [data-collage-position="lead"] p { left: 970px; top: 788px; }
+.editorial-spread [data-collage-position="side"] .eyebrow { left: 1435px; top: 64px; }
+.editorial-spread [data-collage-position="side"] h2 { left: 1435px; top: 112px; }
+.editorial-spread [data-collage-position="side"] p { left: 1435px; top: 244px; max-height: 130px; }
+.editorial-spread [data-collage-position="side"] .activity-image { left: 1435px; top: 396px; width: 445px !important; height: 644px !important; object-fit: cover; }
+
+/* Public process above the collage; never rebalance or clear the artwork. */
+.activity-pulse { position: absolute; left: 350px; top: 96px; width: 1220px; z-index: 200; pointer-events: none; color: #fff; mix-blend-mode: difference; }
+.activity-pulse[hidden] { display: none; }
+.activity-pulse-beat { animation: activity-staccato 4.2s steps(1, end) both; }
+.activity-pulse h2 { font-size: 136px; font-weight: 400; line-height: .8; letter-spacing: -.02em; margin: 24px 0; overflow-wrap: anywhere; }
+.activity-pulse p { width: 445px; white-space: normal; }
+@keyframes activity-staccato { 0%, 48%, 100% { opacity: 1; } 42% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .activity-pulse-beat { animation: none; } }
+
+/* Persistent live work indicator; movement is client-side, not rendered frames. */
+.live-orbit { position:absolute; right:40px; top:40px; width:600px; height:690px; z-index:190; background:rgba(255,255,255,.94); color:#161616; pointer-events:none; }
+.live-orbit svg { width:600px; height:600px; overflow:visible; }
+.live-orbit text { font-family:"Neue Haas Grotesk Display"; font-weight:400; fill:currentColor; }
+.live-orbit-ring { transform-origin:300px 300px; animation:live-orbit-spin 45s linear infinite; }
+.live-orbit-caption { position:absolute; top:24px; left:40px; }
+.live-orbit-heading { position:absolute; top:258px; left:155px; width:290px; text-align:center; font-size:38px; line-height:.9; }
+.live-orbit-detail { position:absolute; top:594px; left:77px; width:445px; font-size:18px; line-height:1.2; }
+.live-orbit[data-status="completed"],.live-orbit[data-status="failed"],.live-orbit[data-status="stale"] { width:480px; height:184px; top:auto; bottom:40px; padding:28px; }
+.live-orbit:not([data-status="running"]) svg { display:none; }
+.live-orbit:not([data-status="running"]) .live-orbit-caption { position:static; }
+.live-orbit:not([data-status="running"]) .live-orbit-heading { position:static; width:auto; text-align:left; font-size:30px; margin-top:16px; }
+.live-orbit:not([data-status="running"]) .live-orbit-detail { display:none; }
+.live-orbit.disconnected .live-orbit-ring { animation-play-state:paused; }
+.live-orbit.disconnected::after { content:'Connection lost — reconnecting'; position:absolute; top:56px; left:40px; background:white; }
+@keyframes live-orbit-spin { to { transform:rotate(360deg); } }
+@media(prefers-reduced-motion:reduce) { .live-orbit-ring { animation:none; } }
+
+/* User's demo vocabulary. Explicit result beats; the ordinary composition survives. */
+.demo-active > .evolving-section { visibility: hidden; }
+.demo-presentation { position: absolute; inset: 0; background: white; overflow: hidden; z-index: 3; }
+.demo-photo { position: absolute; object-fit: cover; }
+.demo-title { position: absolute; left: 40px; top: 300px; width: 1220px; white-space: pre-line; overflow-wrap: anywhere; }
+.demo-copy { position: absolute; left: 1435px; top: 84px; width: 445px; }
+.demo-copy .eyebrow { margin-bottom: 20px; }
+.demo-copy p + p { text-indent: 2em; }
+.demo-staggered .demo-title { left: -85px; width: 1350px; }
+.demo-staggered .demo-title span { display: block; white-space: normal; }
+.demo-staggered .demo-title span:nth-child(1) { padding-left: 280px; }
+.demo-staggered .demo-title span:nth-child(2) { padding-left: 125px; }
+.demo-photo-stack .demo-title { left: 195px; top: 520px; width: 1065px; }
+.demo-photo-hero .demo-title { left: 40px; top: 500px; width: 1065px; }
+.demo-photo-hero .demo-copy { left: 40px; top: 84px; }
+.demo-type-echo .demo-title { left: -90px; top: 100px; width: 1510px; }
+.demo-type-echo .demo-copy { left: 1125px; top: 700px; background: white; z-index: 2; }
+.demo-echo { position: absolute; font-size: 128px; line-height: .8; letter-spacing: -.02em; font-weight: 400; white-space: nowrap; }

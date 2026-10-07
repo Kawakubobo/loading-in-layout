@@ -2,11 +2,11 @@ import { copyFile, mkdir, readFile, rename, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { randomUUID } from 'node:crypto';
-import { atomicJson, resetActivity } from './activity-store.mjs';
+import { atomicJson, resetActivity, readActivity } from './activity-store.mjs';
 
 export const snapshotFiles = ['index.html', 'styles.css', 'app.js', 'layout-engine.js'];
 
-export async function beginPrompt(projectRoot) {
+export async function beginPrompt(projectRoot, { preserveActivity = false } = {}) {
   const snapshotId = randomUUID();
   const snapshots = path.join(projectRoot, 'snapshots');
   const staging = path.join(snapshots, `.staging-${snapshotId}`);
@@ -32,7 +32,7 @@ export async function beginPrompt(projectRoot) {
     const manifest = { snapshotId, updatedAt: new Date().toISOString() };
     await atomicJson(manifestPath, manifest);
     manifestWritten = true;
-    const feed = await resetActivity(projectRoot);
+    const feed = preserveActivity ? await readActivity(projectRoot) : await resetActivity(projectRoot);
     committed = true;
     return { ...manifest, session: feed.session };
   } catch (error) {
@@ -52,7 +52,7 @@ export async function beginPrompt(projectRoot) {
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
   const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
   try {
-    const result = await beginPrompt(projectRoot);
+    const result = await beginPrompt(projectRoot, { preserveActivity: process.argv.includes('--preserve-activity') });
     console.log(`Reference refreshed: ${result.snapshotId}`);
     console.log(`Activity session: ${result.session}`);
   } catch (error) {

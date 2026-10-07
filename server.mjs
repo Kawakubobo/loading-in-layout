@@ -7,8 +7,8 @@ import { ensureActivityStore, readActivity } from './scripts/activity-store.mjs'
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const publicFiles = new Set(['/index.html', '/styles.css', '/app.js', '/layout-engine.js']);
-const fontFiles = new Set(['/assets/fonts/TWKLausanne-400.otf', '/assets/fonts/TWKLausanne-600.otf']);
-const types = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.otf': 'font/otf' };
+const fontFiles = new Set(['/assets/fonts/NeueHaasGroteskDisplay-Medium.ttf', '/assets/fonts/NeueHaasGroteskDisplay-Regular.ttf', '/assets/fonts/NeueHaasGroteskDisplay-Bold.ttf', '/assets/fonts/Akkurat-Regular.otf', '/assets/fonts/Akkurat-Bold.otf', '/assets/fonts/TWKLausanne-400.otf', '/assets/fonts/TWKLausanne-600.otf']);
+const types = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.otf': 'font/otf', '.ttf': 'font/ttf' };
 
 function send(client, event, data) {
   if (!client.destroyed) client.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
@@ -62,13 +62,14 @@ export async function startServers({ projectRoot = root, workingPort = 4173, ref
           return;
         }
         const pathname = url.pathname === '/' ? '/index.html' : url.pathname;
-        if (!publicFiles.has(pathname) && !fontFiles.has(pathname)) {
+        const exampleImage = /^\/example\/[a-zA-Z0-9_-]+\.jpg$/.test(pathname);
+        if (!publicFiles.has(pathname) && !fontFiles.has(pathname) && !exampleImage) {
           response.writeHead(404);
           response.end('Not found');
           return;
         }
-        const contents = await readFile(path.join(fontFiles.has(pathname) ? projectRoot : sourceRoot, pathname));
-        response.writeHead(200, { 'Content-Type': types[path.extname(pathname)], 'Cache-Control': 'no-store' });
+        const contents = await readFile(path.join(fontFiles.has(pathname) || exampleImage ? projectRoot : sourceRoot, pathname));
+        response.writeHead(200, { 'Content-Type': exampleImage ? 'image/jpeg' : types[path.extname(pathname)], 'Cache-Control': 'no-store' });
         response.end(request.method === 'HEAD' ? undefined : contents);
       } catch (error) {
         console.error(`${mode}: ${error.message}`);

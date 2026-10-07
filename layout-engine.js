@@ -1,8 +1,27 @@
+// Explicit editorial beats transcribed from the user's v6 demo, not random scenes.
+export const PRESENTATIONS = Object.freeze(['overtext', 'editorial', 'staggered', 'photo-stack', 'type-echo', 'photo-hero']);
+export const DEMO_PRESENTATIONS = Object.freeze(['staggered', 'photo-stack', 'type-echo', 'photo-hero']);
+
+export function presentationPlan(mode, photos = []) {
+  if (!DEMO_PRESENTATIONS.includes(mode)) return null;
+  const recent = photos.filter(photo => photo?.image).slice(-2);
+  // Text-only fallback preserves the actual update without manufacturing imagery.
+  if (mode.startsWith('photo-') && !recent.length) mode = 'staggered';
+  const frames = mode === 'photo-stack'
+    ? (recent.length === 1 ? [{ x: 40, y: 64, width: 910, height: 610 }] : [
+      { x: 40, y: 64, width: 910, height: 610 },
+      { x: 660, y: 250, width: 600, height: 790 },
+    ])
+    : mode === 'photo-hero' ? [{ x: 505, y: 320, width: 1065, height: 600 }] : [];
+  const selected = mode === 'photo-hero' ? recent.slice(-1) : recent;
+  return { mode, photos: frames.map((frame, index) => ({ ...frame, event: selected[index] })) };
+}
+
 export const LIMITS = Object.freeze({
   width: 1920,
   height: 1080,
-  padding: 24,
-  gap: 16,
+  padding: 40,
+  gap: 20,
   columns: 12,
   rows: 5,
   rememberedSections: 3,
@@ -296,4 +315,11 @@ export function composeLayout({ items, seed = 0 }) {
   }
   const byId = new Map(best.positions.map(position => [position.id, position]));
   return measured.map(item => byId.get(item.id));
+}
+
+// Public execution lifecycle only; the browser animates between real updates.
+export function reduceLiveActivity(current, event) {
+  if (!event?.status || !event.runId) return current;
+  if (event.status === 'running') return event;
+  return current?.runId === event.runId ? event : current;
 }

@@ -19,3 +19,9 @@
 node_modules/
 coverage/
 *.log
+
+# Generated demo movies and full-resolution frames (small references live in docs/)
+/exports/
+# Local research images are not part of the demo source package
+/example/*
+!/example/README.md

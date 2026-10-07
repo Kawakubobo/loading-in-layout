@@ -63,13 +63,13 @@ test('connected intersections merge transitively', () => {
 test('placement stays inside the padding and uses the grid for many sizes and seeds', () => {
   const columnStep = (LIMITS.width - 2 * LIMITS.padding + LIMITS.gap) / LIMITS.columns;
   const rowStep = (LIMITS.height - 2 * LIMITS.padding + LIMITS.gap) / LIMITS.rows;
-  for (const [width, height] of [[141, 190], [613, 400], [1872, 1032]]) {
+  for (const [width, height] of [[141, 190], [613, 400], [LIMITS.width - 2 * LIMITS.padding, LIMITS.height - 2 * LIMITS.padding]]) {
     for (let seed = 0; seed < 100; seed++) {
       const { x, y } = choosePlacement({ width, height, seed });
-      assert.ok(x >= 24 && y >= 24);
-      assert.ok(x + width <= 1896 + 1e-7 && y + height <= 1056 + 1e-7);
-      const column = (x - 24) / columnStep;
-      const row = (y - 24) / rowStep;
+      assert.ok(x >= LIMITS.padding && y >= LIMITS.padding);
+      assert.ok(x + width <= LIMITS.width - LIMITS.padding + 1e-7 && y + height <= LIMITS.height - LIMITS.padding + 1e-7);
+      const column = (x - LIMITS.padding) / columnStep;
+      const row = (y - LIMITS.padding) / rowStep;
       assert.ok(Math.abs(column - Math.round(column)) < 1e-7);
       assert.ok(Math.abs(row - Math.round(row)) < 1e-7);
     }
@@ -77,7 +77,7 @@ test('placement stays inside the padding and uses the grid for many sizes and se
 });
 
 test('placement prefers a clear location and varies deterministic ties by seed', () => {
-  const occupied = [rect(24, 24, 1500, 800, 'old')];
+  const occupied = [rect(LIMITS.padding, LIMITS.padding, 1500, 800, 'old')];
   const options = { width: 100, height: 100, occupied, seed: 'frame-12' };
   assert.deepEqual(choosePlacement(options), choosePlacement(options));
   const placement = choosePlacement(options);
@@ -105,17 +105,17 @@ function opticalCenter(items, positions) {
 function assertClearComposition(items, positions) {
   const rectangles = positions.map((position, index) => ({ ...items[index], ...position }));
   for (const item of rectangles) {
-    assert.ok(item.x >= 24 && item.y >= 24, `${item.id} starts within the canvas`);
-    assert.ok(item.x + item.width <= 1896 + 1e-7, `${item.id} fits horizontally`);
-    assert.ok(item.y + item.height <= 1056 + 1e-7, `${item.id} fits vertically`);
+    assert.ok(item.x >= LIMITS.padding && item.y >= LIMITS.padding, `${item.id} starts within the canvas`);
+    assert.ok(item.x + item.width <= LIMITS.width - LIMITS.padding + 1e-7, `${item.id} fits horizontally`);
+    assert.ok(item.y + item.height <= LIMITS.height - LIMITS.padding + 1e-7, `${item.id} fits vertically`);
   }
   for (let i = 0; i < rectangles.length; i++) {
     for (let j = i + 1; j < rectangles.length; j++) {
       const a = rectangles[i];
       const b = rectangles[j];
-      assert.ok(a.x + a.width + 16 <= b.x + 1e-7 || b.x + b.width + 16 <= a.x + 1e-7
-        || a.y + a.height + 16 <= b.y + 1e-7 || b.y + b.height + 16 <= a.y + 1e-7,
-      `${a.id} and ${b.id} have a clear 16px separation`);
+      assert.ok(a.x + a.width + LIMITS.gap <= b.x + 1e-7 || b.x + b.width + LIMITS.gap <= a.x + 1e-7
+        || a.y + a.height + LIMITS.gap <= b.y + 1e-7 || b.y + b.height + LIMITS.gap <= a.y + 1e-7,
+      `${a.id} and ${b.id} have a clear ${LIMITS.gap}px separation`);
     }
   }
 }
@@ -164,7 +164,9 @@ test('a heavy section counterbalances two smaller sections on the opposite side'
 });
 
 test('balanced layouts remain deterministic and readable at the renderer column widths', () => {
-  for (const [width, height] of [[770, 350], [928, 360], [300, 500]]) {
+  const columnWidth = (LIMITS.width - 2 * LIMITS.padding - (LIMITS.columns - 1) * LIMITS.gap) / LIMITS.columns;
+  const span = count => count * columnWidth + (count - 1) * LIMITS.gap;
+  for (const [width, height] of [[span(5), 350], [span(6), 360], [300, 500]]) {
     for (let seed = 0; seed < 12; seed++) {
       const items = ['a', 'b', 'c'].map((id, i) => ({ id, width, height,
         weight: 100 + i * 80, inkX: width * 0.42, inkY: height * 0.45 }));

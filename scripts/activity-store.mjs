@@ -2,6 +2,7 @@ import { mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { setTimeout as delay } from 'node:timers/promises';
+import { PRESENTATIONS } from '../layout-engine.js';
 
 export async function atomicJson(filename, value) {
   const temporary = `${filename}.${randomUUID()}.tmp`;
@@ -22,7 +23,38 @@ export function validateEvent(input) {
     }
   }
   if (!['tool', 'progress'].includes(input.kind)) throw new TypeError('kind must be tool or progress.');
-  return { title: input.title.trim(), summary: input.summary.trim(), kind: input.kind };
+  const event = { title: input.title.trim(), summary: input.summary.trim(), kind: input.kind };
+  if (input.status !== undefined) {
+    if (input.kind !== 'tool' || !['running', 'completed', 'failed'].includes(input.status)) throw new TypeError('Invalid live status.');
+    if (typeof input.runId !== 'string' || !/^[a-zA-Z0-9_-]{1,100}$/.test(input.runId)) throw new TypeError('Live status requires a runId.');
+    event.status = input.status;
+    event.runId = input.runId;
+    if (input.status === 'running') {
+      const expiry = Date.parse(input.expiresAt);
+      if (!Number.isFinite(expiry)) throw new TypeError('Running status requires expiresAt.');
+      event.expiresAt = new Date(expiry).toISOString();
+    }
+    if (input.labels !== undefined) {
+      if (!Array.isArray(input.labels) || input.labels.length > 4 || input.labels.some(s => typeof s !== 'string' || !s.trim() || s.length > 80)) throw new TypeError('Invalid live labels.');
+      event.labels = input.labels;
+    }
+  }
+  if (input.presentation !== undefined) {
+    if (!PRESENTATIONS.includes(input.presentation)) throw new TypeError('Unknown presentation.');
+    if (input.presentation === 'overtext' && input.title.split('\n').length > 2) throw new TypeError('Overtext supports at most two lines.');
+    event.presentation = input.presentation;
+  }
+  if (input.image !== undefined) {
+    const image = input.image;
+    if (!image || typeof image !== 'object' || !/^\/example\/[a-zA-Z0-9_-]+\.jpg$/.test(image.src)
+      || typeof image.alt !== 'string' || !image.alt.trim() || image.alt.length > 300
+      || !Number.isSafeInteger(image.width) || image.width < 1 || image.width > 20000
+      || !Number.isSafeInteger(image.height) || image.height < 1 || image.height > 20000) {
+      throw new TypeError('Image must be a local example JPEG with alt text and valid dimensions.');
+    }
+    event.image = { src: image.src, alt: image.alt, width: image.width, height: image.height };
+  }
+  return event;
 }
 
 export async function readActivity(projectRoot) {
